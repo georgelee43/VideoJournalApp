@@ -6,8 +6,6 @@ import {
   Text,
   TouchableOpacity,
   Alert,
-  Modal,
-  TextInput,
   ActivityIndicator,
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
@@ -33,9 +31,9 @@ import { HomeScreen } from "./screens/HomeScreen/HomeScreen";
 import { LibraryScreen } from "./screens/LibraryScreen/LibraryScreen";
 import { EditorScreen } from "./screens/EditorScreen/EditorScreen";
 import { SettingsScreen } from "./screens/SettingsScreen/SettingsScreen";
+import { DatePickerModal } from "./components/DatePickerModal/DatePickerModal";
 import { MediaItem, Project, UserSettings } from "./types";
 import { globalStyles as styles } from "./styles/global";
-import { modalStyles } from "./styles/modal";
 
 // Initialize Supabase client
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL; // e.g., https://xxxxx.supabase.co
@@ -455,65 +453,6 @@ export default function App() {
   };
 
   // (moved) Authentication Screen
-
-  // Date Range Picker Modal (hoisted)
-  type DatePickerModalProps = {
-    visible: boolean;
-    start: string;
-    end: string;
-    onChangeStart: (text: string) => void;
-    onChangeEnd: (text: string) => void;
-    onCancel: () => void;
-    onConfirm: () => void;
-  };
-
-  function DatePickerModal({
-    visible,
-    start,
-    end,
-    onChangeStart,
-    onChangeEnd,
-    onCancel,
-    onConfirm,
-  }: DatePickerModalProps) {
-    return (
-      <Modal visible={visible} animationType="slide" transparent={true}>
-        <View style={modalStyles.modalOverlay}>
-          <View style={modalStyles.modalContent}>
-            <Text style={modalStyles.modalTitle}>Select Date Range</Text>
-            <TextInput
-              style={modalStyles.input}
-              placeholder="Start Date (YYYY-MM-DD)"
-              value={start}
-              onChangeText={onChangeStart}
-            />
-            <TextInput
-              style={modalStyles.input}
-              placeholder="End Date (YYYY-MM-DD)"
-              value={end}
-              onChangeText={onChangeEnd}
-            />
-            <View style={modalStyles.modalButtons}>
-              <TouchableOpacity
-                style={[modalStyles.modalButton, modalStyles.cancelButton]}
-                onPress={onCancel}
-              >
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[modalStyles.modalButton, modalStyles.confirmButton]}
-                onPress={onConfirm}
-              >
-                <Text style={modalStyles.confirmButtonText}>
-                  Create Project
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
 
   if (loading) {
     return (
