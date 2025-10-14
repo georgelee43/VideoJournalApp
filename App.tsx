@@ -10,6 +10,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
+import * as MediaLibrary from "expo-media-library";
 
 // Supabase imports
 // npm install @supabase/supabase-js
@@ -40,8 +41,6 @@ import { modalStyles } from "./styles/modal";
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL; // e.g., https://xxxxx.supabase.co
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-console.log(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function App() {
@@ -61,6 +60,49 @@ export default function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+
+  // initial check for library permissions and load initial assets
+  useEffect(() => {
+    getPermissionAndLoadAssets();
+  }, []);
+
+  const getPermissionAndLoadAssets = async () => {
+    // Check if permission is granted
+    if (permissionResponse?.status !== "granted") {
+      const { status } = await requestPermission();
+      if (status !== "granted") {
+        alert("Permission to access media library is required!");
+        return;
+      }
+    }
+
+    loadAssets();
+  };
+
+  const loadAssets = async () => {
+    // TODO: update for photo and videos...
+    const media = await MediaLibrary.getAssetsAsync({
+      first: 6,
+      mediaType: ["photo", "video"],
+      sortBy: ["creationTime"],
+    });
+
+    const assetsWithInfo: MediaItem[] = await Promise.all(
+      media.assets.map(async (asset) => {
+        const info = await MediaLibrary.getAssetInfoAsync(asset.id);
+
+        return {
+          id: asset.id,
+          uri: info.localUri || info.uri,
+          type: "photo",
+          timestamp: asset.creationTime,
+        };
+      })
+    );
+    setMediaLibrary(assetsWithInfo);
+  };
 
   // Supabase Authentication State
   useEffect(() => {
@@ -86,7 +128,6 @@ export default function App() {
       } else {
         setShowAuth(true);
         setProjects([]);
-        setMediaLibrary([]);
       }
     });
 
@@ -109,18 +150,18 @@ export default function App() {
         setProjects(projectsData);
       }
 
-      // Load media library metadata
-      const { data: mediaData, error: mediaError } = await supabase
-        .from("media")
-        .select("*")
-        .eq("user_id", userId)
-        .order("timestamp", { ascending: false });
+      // Load media library metadata ???
+      // const { data: mediaData, error: mediaError } = await supabase
+      //   .from("media")
+      //   .select("*")
+      //   .eq("user_id", userId)
+      //   .order("timestamp", { ascending: false });
 
-      if (mediaError) throw mediaError;
+      // if (mediaError) throw mediaError;
 
-      if (mediaData) {
-        setMediaLibrary(mediaData);
-      }
+      // if (mediaData) {
+      //   setMediaLibrary(mediaData);
+      // }
 
       // Load user settings
       await loadUserSettings(userId);
@@ -175,7 +216,6 @@ export default function App() {
       if (error) throw error;
 
       setProjects([]);
-      setMediaLibrary([]);
       setCurrentProject(null);
     } catch (error: any) {
       Alert.alert("Error", error.message);
@@ -353,36 +393,6 @@ export default function App() {
     }
   };
 
-  const loadMediaLibrary = async () => {
-    // Implementation with @react-native-camera-roll/camera-roll
-    console.log("Loading media library...");
-
-    // Mock data for demonstration
-    const mockMedia: MediaItem[] = [
-      {
-        id: "1",
-        uri: "video1.mp4",
-        type: "video",
-        timestamp: Date.now() - 86400000,
-        duration: 45,
-      },
-      {
-        id: "2",
-        uri: "video2.mp4",
-        type: "video",
-        timestamp: Date.now() - 172800000,
-        duration: 30,
-      },
-      {
-        id: "3",
-        uri: "photo1.jpg",
-        type: "photo",
-        timestamp: Date.now() - 259200000,
-      },
-    ];
-    setMediaLibrary(mockMedia);
-  };
-
   const filterMediaByDateRange = (start: string, end: string) => {
     const startDate = new Date(start).getTime();
     const endDate = new Date(end).getTime();
@@ -530,6 +540,7 @@ export default function App() {
     );
   }
 
+  // TODO: use React Navigator at some point
   return (
     <SafeAreaView style={styles.safeArea}>
       {view === "home" && (

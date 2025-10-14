@@ -34,12 +34,17 @@ export const styles = StyleSheet.create({
     position: "relative",
   },
   thumbnail: {
-    width: "100%",
+    width: "95%",
     aspectRatio: 1,
     backgroundColor: "#e0e0e0",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+  },
+  thumbnailImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 6,
   },
   selected: {
     borderWidth: 3,

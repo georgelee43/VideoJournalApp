@@ -11,7 +11,17 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ]
+    ],
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.glee43.videojournalapp",
@@ -25,11 +35,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "READ_MEDIA_VIDEO",
-        "READ_MEDIA_IMAGES",
-        "CAMERA"
-      ],
+      "permissions": ["READ_MEDIA_VIDEO", "READ_MEDIA_IMAGES", "CAMERA"],
       "package": "com.glee43.videojournalapp"
     }
   }

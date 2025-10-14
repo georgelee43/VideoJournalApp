@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, Image, FlatList } from "react-native";
 import { MediaItem } from "../../types";
 import { globalStyles } from "../../styles/global";
+
+// import { Video } from "expo-av"; TODO
 
 import { styles } from "./styles";
 
@@ -22,6 +24,19 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
   onToggleSelect,
   onCreateFromSelected,
 }) => {
+  const renderItem = (item: MediaItem) => {
+    // TODO: implement for video when I can actually check
+    if (item.type === "video") {
+      return (
+        <Text style={styles.thumbnailText}>
+          {item.type === "video" ? "▶️" : "📷"}
+        </Text>
+      );
+    }
+
+    return <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -57,9 +72,7 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
                     styles.selected,
                 ]}
               >
-                <Text style={styles.thumbnailText}>
-                  {item.type === "video" ? "▶️" : "📷"}
-                </Text>
+                {renderItem(item)}
               </View>
               {item.duration && (
                 <Text style={styles.duration}>{item.duration}s</Text>
