@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { MediaItem } from "../../types";
+import { globalStyles } from "../../styles/global";
 
 import { styles } from "./styles";
 
@@ -45,7 +46,7 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.gridItem}
+            style={globalStyles.gridItem}
             onPress={() => onToggleSelect(item)}
           >
             <View style={styles.thumbnailContainer}>

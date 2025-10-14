@@ -2,19 +2,13 @@
 import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
-  ScrollView,
   View,
   Text,
   TouchableOpacity,
-  FlatList,
-  StyleSheet,
   Alert,
   Modal,
   TextInput,
-  Dimensions,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 
 // Supabase imports
@@ -39,17 +33,16 @@ import { LibraryScreen } from "./screens/LibraryScreen/LibraryScreen";
 import { EditorScreen } from "./screens/EditorScreen/EditorScreen";
 import { SettingsScreen } from "./screens/SettingsScreen/SettingsScreen";
 import { MediaItem, Project, UserSettings } from "./types";
+import { globalStyles as styles } from "./styles/global";
+import { modalStyles } from "./styles/modal";
 
 // Initialize Supabase client
-// IMPORTANT: Replace these with your actual Supabase project credentials
-const SUPABASE_URL = "https://tltjhjbhuhvohaymqwhk.supabase.co"; // e.g., https://xxxxx.supabase.co
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsdGpoamJodWh2b2hheW1xd2hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzOTI0NjEsImV4cCI6MjA3NTk2ODQ2MX0.BRRNmDx8ulvKkDXRL-7bGX9uijbeRV_NXYFMmSUZ0vw";
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL; // e.g., https://xxxxx.supabase.co
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+console.log(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const { width } = Dimensions.get("window");
-const GRID_ITEM_SIZE = (width - 48) / 3;
 
 export default function App() {
   const [view, setView] = useState<"home" | "library" | "editor" | "settings">(
@@ -475,33 +468,35 @@ export default function App() {
   }: DatePickerModalProps) {
     return (
       <Modal visible={visible} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Date Range</Text>
+        <View style={modalStyles.modalOverlay}>
+          <View style={modalStyles.modalContent}>
+            <Text style={modalStyles.modalTitle}>Select Date Range</Text>
             <TextInput
-              style={styles.input}
+              style={modalStyles.input}
               placeholder="Start Date (YYYY-MM-DD)"
               value={start}
               onChangeText={onChangeStart}
             />
             <TextInput
-              style={styles.input}
+              style={modalStyles.input}
               placeholder="End Date (YYYY-MM-DD)"
               value={end}
               onChangeText={onChangeEnd}
             />
-            <View style={styles.modalButtons}>
+            <View style={modalStyles.modalButtons}>
               <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
+                style={[modalStyles.modalButton, modalStyles.cancelButton]}
                 onPress={onCancel}
               >
                 <Text>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, styles.confirmButton]}
+                style={[modalStyles.modalButton, modalStyles.confirmButton]}
                 onPress={onConfirm}
               >
-                <Text style={styles.confirmButtonText}>Create Project</Text>
+                <Text style={modalStyles.confirmButtonText}>
+                  Create Project
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -653,279 +648,3 @@ export default function App() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  centerContent: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  flex1: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  settingsIcon: {
-    fontSize: 28,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  backButton: {
-    fontSize: 18,
-    color: "#007AFF",
-    marginRight: 16,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  actionButton: {
-    backgroundColor: "#007AFF",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  actionButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginTop: 24,
-    marginBottom: 12,
-  },
-  projectsList: {
-    marginTop: 24,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: "#999",
-    fontSize: 16,
-    marginTop: 24,
-  },
-  projectItem: {
-    backgroundColor: "white",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  projectName: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  projectDate: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 4,
-  },
-  filterBar: {
-    flexDirection: "row",
-    marginBottom: 16,
-  },
-  filterButton: {
-    backgroundColor: "white",
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  gridItem: {
-    width: GRID_ITEM_SIZE,
-    margin: 4,
-  },
-  thumbnailContainer: {
-    position: "relative",
-  },
-  thumbnail: {
-    width: "100%",
-    aspectRatio: 1,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  selected: {
-    borderWidth: 3,
-    borderColor: "#007AFF",
-  },
-  thumbnailText: {
-    fontSize: 32,
-  },
-  duration: {
-    position: "absolute",
-    bottom: 4,
-    right: 4,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    color: "white",
-    padding: 4,
-    borderRadius: 4,
-    fontSize: 10,
-  },
-  date: {
-    fontSize: 10,
-    color: "#666",
-    marginTop: 4,
-    textAlign: "center",
-  },
-  floatingButton: {
-    position: "absolute",
-    bottom: 24,
-    left: 16,
-    right: 16,
-    backgroundColor: "#007AFF",
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 8,
-  },
-  floatingButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  editorSection: {
-    marginBottom: 24,
-  },
-  timeline: {
-    flexDirection: "row",
-  },
-  timelineClip: {
-    width: 100,
-    marginRight: 8,
-  },
-  clipPreview: {
-    width: 100,
-    height: 100,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  clipDuration: {
-    fontSize: 12,
-    textAlign: "center",
-    marginTop: 4,
-  },
-  clipActions: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 4,
-  },
-  clipAction: {
-    fontSize: 18,
-    color: "#ff3b30",
-  },
-  toolButton: {
-    backgroundColor: "white",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  toolButtonText: {
-    fontSize: 16,
-    textAlign: "center",
-  },
-  exportButton: {
-    backgroundColor: "#34C759",
-    borderColor: "#34C759",
-  },
-  exportButtonText: {
-    color: "white",
-    fontWeight: "600",
-  },
-  deleteButton: {
-    backgroundColor: "#ff3b30",
-    borderColor: "#ff3b30",
-  },
-  deleteButtonText: {
-    color: "white",
-    fontWeight: "600",
-  },
-  settingsSection: {
-    marginBottom: 24,
-  },
-  settingsText: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 16,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 24,
-    borderRadius: 12,
-    width: "80%",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 16,
-  },
-  modalButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    marginHorizontal: 4,
-  },
-  cancelButton: {
-    backgroundColor: "#f0f0f0",
-  },
-  confirmButton: {
-    backgroundColor: "#007AFF",
-  },
-  confirmButtonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "600",
-  },
-});

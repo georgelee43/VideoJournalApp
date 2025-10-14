@@ -1,7 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
-
-const { width } = Dimensions.get("window");
-const GRID_ITEM_SIZE = (width - 48) / 3;
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
@@ -32,10 +29,6 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#ddd",
-  },
-  gridItem: {
-    width: GRID_ITEM_SIZE,
-    margin: 4,
   },
   thumbnailContainer: {
     position: "relative",
