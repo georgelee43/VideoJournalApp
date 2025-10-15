@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
+import * as VideoThumbnails from "expo-video-thumbnails"; // Disabled for now
+import * as FileSystem from "expo-file-system";
 
 // Supabase imports
 // npm install @supabase/supabase-js
@@ -32,7 +34,7 @@ import { LibraryScreen } from "./screens/LibraryScreen/LibraryScreen";
 import { EditorScreen } from "./screens/EditorScreen/EditorScreen";
 import { SettingsScreen } from "./screens/SettingsScreen/SettingsScreen";
 import { DatePickerModal } from "./components/DatePickerModal/DatePickerModal";
-import { MediaItem, Project, UserSettings } from "./types";
+import { MediaItem, MediaType, Project, UserSettings } from "./types";
 import { globalStyles as styles } from "./styles/global";
 
 // Initialize Supabase client
@@ -45,23 +47,29 @@ export default function App() {
   const [view, setView] = useState<"home" | "library" | "editor" | "settings">(
     "home"
   );
+
+  // accessing photo video library
   const [mediaLibrary, setMediaLibrary] = useState<MediaItem[]>([]);
+  const [endCursor, setEndCursor] = useState<string | undefined>(undefined);
+  // project data
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
-  const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+
+  // auth stuff
+  const [session, setSession] = useState<any>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
-
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+  // loading state
+  const [loading, setLoading] = useState(true);
 
   // initial check for library permissions and load initial assets
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   useEffect(() => {
     getPermissionAndLoadAssets();
   }, []);
@@ -75,31 +83,42 @@ export default function App() {
         return;
       }
     }
-
-    loadAssets();
+    // initial load of photos and videos
+    loadPhotosAndVideos();
   };
 
-  const loadAssets = async () => {
-    // TODO: update for photo and videos...
+  const loadPhotosAndVideos = async () => {
     const media = await MediaLibrary.getAssetsAsync({
-      first: 6,
+      first: 50,
+      after: endCursor,
       mediaType: ["photo", "video"],
       sortBy: ["creationTime"],
     });
 
     const assetsWithInfo: MediaItem[] = await Promise.all(
       media.assets.map(async (asset) => {
+        // if photo get the asset info, if video, get the thumbnail
+        let thumbnail = "";
         const info = await MediaLibrary.getAssetInfoAsync(asset.id);
+
+        if (asset.mediaType == "video") {
+          // TODO, fix the video thumbnail problem...maybe try playing it somewhere to help debug the issue maybe the underlying asset is broken
+        } else {
+          thumbnail = info.localUri || info.uri;
+        }
 
         return {
           id: asset.id,
-          uri: info.localUri || info.uri,
-          type: "photo",
+          uri: asset.uri,
+          thumbnail: thumbnail,
+          type: asset.mediaType as MediaType,
           timestamp: asset.creationTime,
         };
       })
     );
-    setMediaLibrary(assetsWithInfo);
+
+    setMediaLibrary([...mediaLibrary, ...assetsWithInfo]);
+    setEndCursor(media.endCursor);
   };
 
   // Supabase Authentication State
@@ -534,6 +553,7 @@ export default function App() {
               setSelectedMedia([]);
             }
           }}
+          onEndReached={loadPhotosAndVideos}
         />
       )}
 

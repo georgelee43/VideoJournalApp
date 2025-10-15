@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, Image, FlatList } from "react-native";
 import { MediaItem } from "../../types";
 import { globalStyles } from "../../styles/global";
 
-// import { Video } from "expo-av"; TODO
+import { Video } from "expo-av";
 
 import { styles } from "./styles";
 
@@ -14,6 +14,7 @@ export type LibraryScreenProps = {
   onOpenDatePicker: () => void;
   onToggleSelect: (item: MediaItem) => void;
   onCreateFromSelected: () => void;
+  onEndReached: () => void;
 };
 
 export const LibraryScreen: React.FC<LibraryScreenProps> = ({
@@ -23,20 +24,8 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
   onOpenDatePicker,
   onToggleSelect,
   onCreateFromSelected,
+  onEndReached,
 }) => {
-  const renderItem = (item: MediaItem) => {
-    // TODO: implement for video when I can actually check
-    if (item.type === "video") {
-      return (
-        <Text style={styles.thumbnailText}>
-          {item.type === "video" ? "▶️" : "📷"}
-        </Text>
-      );
-    }
-
-    return <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />;
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -56,6 +45,7 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
       </View>
 
       <FlatList
+        onEndReached={onEndReached}
         data={mediaLibrary}
         numColumns={3}
         keyExtractor={(item) => item.id}
@@ -72,7 +62,16 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
                     styles.selected,
                 ]}
               >
-                {renderItem(item)}
+                {item.thumbnail ? (
+                  <Image
+                    source={{ uri: item.thumbnail }}
+                    style={styles.thumbnailImage}
+                  />
+                ) : (
+                  <Text style={styles.thumbnailText}>
+                    {item.type === "video" ? "▶️" : "📷"}
+                  </Text>
+                )}
               </View>
               {item.duration && (
                 <Text style={styles.duration}>{item.duration}s</Text>

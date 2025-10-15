@@ -17,7 +17,8 @@
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true
+          "isAccessMediaLocationEnabled": true,
+          "granularPermissions": ["audio", "photo", "video"]
         }
       ]
     ],
@@ -27,7 +28,9 @@
       "bundleIdentifier": "com.glee43.videojournalapp",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to import and save videos.",
-        "NSPhotoLibraryAddUsageDescription": "This app saves exported videos to your photo library."
+        "NSPhotoLibraryAddUsageDescription": "This app saves exported videos to your photo library.",
+        "NSMicrophoneUsageDescription": "This app needs microphone access to record videos.",
+        "NSCameraUsageDescription": "This app needs camera access to record videos."
       }
     },
     "android": {
@@ -35,7 +38,14 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["READ_MEDIA_VIDEO", "READ_MEDIA_IMAGES", "CAMERA"],
+      "permissions": [
+        "READ_MEDIA_VIDEO",
+        "READ_MEDIA_IMAGES",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA",
+        "RECORD_AUDIO"
+      ],
       "package": "com.glee43.videojournalapp"
     }
   }

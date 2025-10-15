@@ -1,7 +1,9 @@
+export type MediaType = "video" | "photo";
+
 export interface MediaItem {
   id: string;
   uri: string;
-  type: "video" | "photo";
+  type: MediaType;
   timestamp: number;
   duration?: number;
   thumbnail?: string;
