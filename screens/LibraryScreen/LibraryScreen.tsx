@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Image, FlatList } from "react-native";
 import { MediaItem } from "../../types";
 import { globalStyles } from "../../styles/global";
+import { Thumbnail } from "../../components/Thumbnail/Thumbnail";
+import * as MediaLibrary from "expo-media-library";
 
 import { Video } from "expo-av";
 
@@ -62,16 +64,7 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
                     styles.selected,
                 ]}
               >
-                {item.thumbnail ? (
-                  <Image
-                    source={{ uri: item.thumbnail }}
-                    style={styles.thumbnailImage}
-                  />
-                ) : (
-                  <Text style={styles.thumbnailText}>
-                    {item.type === "video" ? "▶️" : "📷"}
-                  </Text>
-                )}
+                <Thumbnail mediaItem={item} />
               </View>
               {item.duration && (
                 <Text style={styles.duration}>{item.duration}s</Text>

@@ -97,20 +97,9 @@ export default function App() {
 
     const assetsWithInfo: MediaItem[] = await Promise.all(
       media.assets.map(async (asset) => {
-        // if photo get the asset info, if video, get the thumbnail
-        let thumbnail = "";
-        const info = await MediaLibrary.getAssetInfoAsync(asset.id);
-
-        if (asset.mediaType == "video") {
-          // TODO, fix the video thumbnail problem...maybe try playing it somewhere to help debug the issue maybe the underlying asset is broken
-        } else {
-          thumbnail = info.localUri || info.uri;
-        }
-
         return {
           id: asset.id,
           uri: asset.uri,
-          thumbnail: thumbnail,
           type: asset.mediaType as MediaType,
           timestamp: asset.creationTime,
         };
